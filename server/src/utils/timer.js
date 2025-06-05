@@ -4,7 +4,9 @@ export function startCountdown(duration, onEnd) {
     time--;
     if (time <= 0) {
       clearInterval(interval);
-      onEnd();
+      if (typeof onEnd === "function") {
+        onEnd();
+      }
     }
   }, 1000);
   return interval;
