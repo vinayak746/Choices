@@ -17,18 +17,18 @@ const Quiz = () => {
     J: 0,
     P: 0,
   });
-
   const handleAnswer = (side) => {
-    if (side === "MAYBE") {
-      if (index + 1 < mbtiQuestions.length) {
-        setIndex(index + 1);
-      } else {
-        finishQuiz();
-      }
-      return;
+    if (side === "maybe") {
+      const { dichotomy } = mbtiQuestions[index];
+      setScores((prev) => ({
+        ...prev,
+        [dichotomy[0]]: prev[dichotomy[0]] + 0.5,
+        [dichotomy[1]]: prev[dichotomy[1]] + 0.5,
+      }));
+    } else {
+      setScores((prev) => ({ ...prev, [side]: prev[side] + 1 }));
     }
 
-    setScores((prev) => ({ ...prev, [side]: prev[side] + 1 }));
     if (index + 1 < mbtiQuestions.length) {
       setIndex(index + 1);
     } else {
@@ -37,6 +37,19 @@ const Quiz = () => {
   };
 
   const finishQuiz = () => {
+    const totalEI = scores.E + scores.I;
+    const totalSN = scores.S + scores.N;
+    const totalTF = scores.T + scores.F;
+    const totalJP = scores.J + scores.P;
+
+    const confidence =
+      ((Math.abs(scores.E - scores.I) / totalEI +
+        Math.abs(scores.S - scores.N) / totalSN +
+        Math.abs(scores.T - scores.F) / totalTF +
+        Math.abs(scores.J - scores.P) / totalJP) /
+        4) *
+      100;
+
     const mbti = [
       scores.E >= scores.I ? "E" : "I",
       scores.S >= scores.N ? "S" : "N",
@@ -45,6 +58,7 @@ const Quiz = () => {
     ].join("");
 
     localStorage.setItem("mbtiResult", mbti);
+    localStorage.setItem("mbtiConfidence", confidence.toFixed(0)); // Save for next screen
     navigate("/setup");
   };
 
