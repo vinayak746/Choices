@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import PlayerSetup from "./pages/PlayerSetup";
 import Game from "./pages/Game";
 import Results from "./pages/Results";
+import Quiz from "./pages/Quiz";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/setup" element={<PlayerSetup />} />
           <Route path="/game" element={<Game />} />
           <Route path="/results" element={<Results />} />
+          <Route path="/quiz" element={<Quiz />} />
         </Routes>
       </BrowserRouter>
     </GameProvider>
