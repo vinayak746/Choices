@@ -1,4 +1,3 @@
-// src/pages/Quiz.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import mbtiQuestions from "../data/mbtiQuestions";
@@ -20,6 +19,15 @@ const Quiz = () => {
   });
 
   const handleAnswer = (side) => {
+    if (side === "MAYBE") {
+      if (index + 1 < mbtiQuestions.length) {
+        setIndex(index + 1);
+      } else {
+        finishQuiz();
+      }
+      return;
+    }
+
     setScores((prev) => ({ ...prev, [side]: prev[side] + 1 }));
     if (index + 1 < mbtiQuestions.length) {
       setIndex(index + 1);
@@ -34,41 +42,49 @@ const Quiz = () => {
       scores.S >= scores.N ? "S" : "N",
       scores.T >= scores.F ? "T" : "F",
       scores.J >= scores.P ? "J" : "P",
-    ].join(""); // Store MBTI in localStorage
+    ].join("");
 
-    localStorage.setItem("mbtiResult", mbti); // Go back to setup
-
+    localStorage.setItem("mbtiResult", mbti);
     navigate("/setup");
   };
 
   const q = mbtiQuestions[index];
 
   return (
-    <div className="p-6 max-w-xl mx-auto text-center">
-      <h2 className="text-2xl font-bold mb-4">
-        Question {index + 1} / {mbtiQuestions.length}
-      </h2>
-      {q ? (
-        <>
-              <p className="mb-6 text-xl font-semibold">{q.question}</p>   {" "}
-          <button
-            className="bg-blue-600 text-white px-4 py-2 mb-4 w-full rounded"
-            onClick={() => handleAnswer(q.dichotomy[0])}
-          >
-                  {q.optionA}   {" "}
-          </button>
-             {" "}
-          <button
-            className="bg-purple-600 text-white px-4 py-2 w-full rounded"
-            onClick={() => handleAnswer(q.dichotomy[1])}
-          >
-                  {q.optionB}   {" "}
-          </button>
-           {" "}
-        </>
-      ) : (
-        <p>Loading question...</p>
-      )}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-900 via-purple-900 to-blue-900">
+      <div className="bg-gray-900 bg-opacity-90 rounded-xl shadow-2xl p-8 max-w-xl w-full text-center">
+        <h2 className="text-3xl font-extrabold mb-6 text-indigo-300">
+          Question {index + 1} / {mbtiQuestions.length}
+        </h2>
+        {q ? (
+          <>
+            <p className="mb-8 text-2xl font-semibold text-white">
+              {q.question}
+            </p>
+            <button
+              className="bg-indigo-800 hover:bg-indigo-500 text-white px-6 py-3 mb-4 w-full rounded-lg text-lg font-medium transition cursor-pointer "
+              onClick={() => handleAnswer(q.dichotomy[0])}
+            >
+              {q.optionA}
+            </button>
+            <button
+              className="bg-red-600 hover:bg-red-400 text-white px-6 py-3 mb-4 w-full rounded-lg text-lg font-medium transition cursor-pointer"
+              onClick={() => handleAnswer(q.dichotomy[1])}
+            >
+              {q.optionB}
+            </button>
+            <p className="mb-2 text-gray-400">Or maybe neither...</p>
+            <button
+              className="bg-gray-700 hover:bg-gray-800 text-white px-6 py-3 w-full rounded-lg text-lg font-medium transition cursor-pointer"
+              onClick={() => handleAnswer("MAYBE")}
+            >
+              Maybe / Depends on the situation
+            </button>
+          </>
+        ) : (
+          <p className="text-white">Loading question...</p>
+        )}
+      </div>
     </div>
   );
 };
