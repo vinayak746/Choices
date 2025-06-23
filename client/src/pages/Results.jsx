@@ -1,7 +1,7 @@
 import { useGame } from "../context/GameContext";
 
 export default function Results() {
-  const { players, resetGame } = useGame();
+  const { players = [], resetGame = () => {} } = useGame() || {};
   const sorted = [...players].sort((a, b) => b.score - a.score);
 
   return (
