@@ -5,7 +5,6 @@ import { questions } from "../data/questions";
 import QuestionCard from "../components/QuestionCard";
 import VotingModal from "../components/VotingModal";
 import Scoreboard from "../components/Scoreboard";
-import { startCountdown } from "../utils/timer";
 
 export default function Game() {
   const {
@@ -15,7 +14,6 @@ export default function Game() {
     setCurrentPlayerIndex,
     round,
     setRound,
-    maxRounds,
     showVoting,
     setShowVoting,
     currentQuestion,
@@ -24,13 +22,26 @@ export default function Game() {
   } = useGame();
 
   const navigate = useNavigate();
-  const [timeLeft, setTimeLeft] = useState(30);
   const [votes, setVotes] = useState({ yes: 0, no: 0 });
+  const [timeLeft, setTimeLeft] = useState(30);
+
+  const difficulty = localStorage.getItem("difficultyLevel") || "Medium";
+
+  const getDifficultySettings = () => {
+    switch (difficulty) {
+      case "Easy":
+        return { timer: 45, rounds: 2 };
+      case "Hard":
+        return { timer: 20, rounds: 5 };
+      default:
+        return { timer: 30, rounds: 3 };
+    }
+  };
+
+  const { timer, rounds: maxRounds } = getDifficultySettings();
 
   useEffect(() => {
-    if (players.length === 0) {
-      navigate("/setup");
-    }
+    if (players.length === 0) navigate("/setup");
   }, [players]);
 
   useEffect(() => {
@@ -43,18 +54,20 @@ export default function Game() {
     if (!player) return;
 
     const mbti = player.mbti;
-    const bank = questions[mbti] || { truths: [], dares: [] };
+    const level = difficulty.toLowerCase();
+    const bank = questions[mbti]?.[level] || { truths: [], dares: [] };
 
     const type = Math.random() < 0.5 ? "truths" : "dares";
     const pool = bank[type];
     const idx = Math.floor(Math.random() * pool.length);
+    const selectedQuestion = pool[idx] || "No question available.";
 
-    setCurrentQuestion({ type: type.slice(0, -1), text: pool[idx] });
+    setCurrentQuestion({ type: type.slice(0, -1), text: selectedQuestion });
     setShowVoting(false);
     setVotes({ yes: 0, no: 0 });
 
-    setTimeLeft(30);
-    let seconds = 60;
+    setTimeLeft(timer);
+    let seconds = timer;
     const interval = setInterval(() => {
       seconds -= 1;
       setTimeLeft(seconds);
@@ -109,6 +122,10 @@ export default function Game() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-700 via-purple-700 to-pink-600 flex flex-col items-center py-10 px-4">
       <div className="w-full max-w-3xl">
         <Scoreboard />
+        <p className="text-white text-center text-sm mt-2">
+          🎯 Difficulty: <span className="font-semibold">{difficulty}</span> •
+          🕒 Timer: {timer}s • 🔁 Rounds: {maxRounds}
+        </p>
       </div>
 
       <div className="flex flex-col items-center w-full max-w-2xl mt-8">

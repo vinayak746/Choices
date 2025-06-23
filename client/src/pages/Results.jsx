@@ -12,7 +12,7 @@ export default function Results() {
       <ul className="mb-8 space-y-3 w-full max-w-md">
         {sorted.map((p, idx) => (
           <li
-            key={p.id}
+            key={p.id || idx}
             className={`flex justify-between items-center w-full p-4 rounded-lg shadow-lg border ${
               idx === 0
                 ? "bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-300 text-black border-yellow-400 font-bold scale-105"

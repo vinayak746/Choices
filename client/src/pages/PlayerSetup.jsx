@@ -29,7 +29,7 @@ export default function PlayerSetup() {
       score: 0,
     }));
     setPlayers(initialPlayers);
-    navigate("/game");
+    navigate("/difficulty");
   };
 
   useEffect(() => {
